@@ -12,7 +12,19 @@
        (map fuel-from-mass)
        (reduce +)))
 
-(defn part-2 [numbers])
+(defn total-fuel-from-mass
+  "Recursively calculates all the fuel needed"
+  [mass]
+  (loop [remaining (fuel-from-mass mass)
+         total 0]
+    (if (pos? remaining)
+      (recur (fuel-from-mass remaining) (+ total remaining))
+      total)))
+
+(defn part-2 [numbers]
+  (->> numbers
+       (map total-fuel-from-mass)
+       (reduce +)))
 
 (defn -main
   [file]
@@ -20,5 +32,5 @@
        (slurp)
        (string/split-lines)
        (map #(Integer/parseInt %))
-       (part-1)
+       (part-2)
        (println)))
