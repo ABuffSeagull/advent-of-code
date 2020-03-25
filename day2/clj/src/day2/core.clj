@@ -29,20 +29,34 @@
    (case (nth input position)
      1 (recur (+ 4 position) (change-vector + input position))
      2 (recur (+ 4 position) (change-vector * input position))
-     99 input
-     "Error")))
+     99 input)))
+
+(defn calc-end
+  [[[noun verb]]]
+  (+ verb (* noun 100)))
+
+(defn part-2
+  [input]
+  (->>
+   (for [noun (range 100)
+         verb (range 100)]
+     [[noun verb] (first (compute (assoc input 1 noun 2 verb)))])
+   (filter #(= 19690720 (second %)))
+   (first)
+   calc-end))
 
 (defn part-1
   [input]
   (-> input
-      (assoc 1 12)
-      (assoc 2 2)
+      (assoc 1 12
+             2 2)
       compute
-      (get 0)))
+      first))
 
 (defn -main
   [filename]
   (-> filename
-       slurp
-       parse-input
-       part-1))
+      slurp
+      parse-input
+      part-2
+      println))
