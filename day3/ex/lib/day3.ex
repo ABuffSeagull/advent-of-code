@@ -1,4 +1,8 @@
 defmodule Day3 do
+  @type direction() :: :R | :L | :U | :D
+  @type coordinate() :: {integer(), integer()}
+
+  @spec part_1([String.t()]) :: pos_integer()
   def part_1(wires) do
     wires
     |> Enum.map(&parse_wire/1)
@@ -7,7 +11,8 @@ defmodule Day3 do
     |> Enum.min()
   end
 
-  def parse_wire(wire) do
+  @spec parse_wire(String.t()) :: [coordinate()]
+  defp parse_wire(wire) do
     wire
     |> String.split(",")
     |> Enum.map(fn dir_length ->
@@ -22,7 +27,8 @@ defmodule Day3 do
   end
 
   # We make the list of coordinates in reverse, since it's easier to work with
-  def wire_to_coords({direction, length}, [{last_x, last_y} | _] = coords) do
+  @spec wire_to_coords({direction(), pos_integer()}, [coordinate()]) :: [coordinate()]
+  defp wire_to_coords({direction, length}, [{last_x, last_y} | _] = coords) do
     Enum.map(
       length..1,
       case direction do
@@ -34,14 +40,17 @@ defmodule Day3 do
     ) ++ coords
   end
 
-  def distance({x, y}), do: abs(x) + abs(y)
+  @spec distance(coordinate()) :: pos_integer()
+  defp distance({x, y}), do: abs(x) + abs(y)
 
-  def find_intersections(wires) do
+  @spec find_intersections([coordinate()]) :: MapSet.t(coordinate())
+  defp find_intersections(wires) do
     wires
     |> Enum.map(&MapSet.new/1)
     |> Enum.reduce(&MapSet.intersection/2)
   end
 
+  @spec part_2([String.t()]) :: pos_integer()
   def part_2(wires) do
     wires = Enum.map(wires, &parse_wire/1)
     intersections = find_intersections(wires)

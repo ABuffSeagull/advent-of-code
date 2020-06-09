@@ -5,10 +5,10 @@ defmodule Day4 do
     |> Stream.map(&String.graphemes/1)
     |> Stream.filter(&(&1 == Enum.sort(&1)))
     # check for adjacent matching digits
-    |> Stream.filter(fn num_list ->
+    |> Stream.filter(fn [_ | tail_list] = num_list ->
       num_list
-      |> Enum.zip(tl(num_list))
-      |> Enum.any?(&(elem(&1, 0) == elem(&1, 1)))
+      |> Enum.zip(tail_list)
+      |> Enum.any?(fn {first_digit, second_digit} -> first_digit == second_digit end)
     end)
   end
 
