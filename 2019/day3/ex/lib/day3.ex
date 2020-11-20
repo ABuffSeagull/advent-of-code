@@ -5,9 +5,9 @@ defmodule Day3 do
   @spec part_1([String.t()]) :: pos_integer()
   def part_1(wires) do
     wires
-    |> Enum.map(&parse_wire/1)
+    |> Stream.map(&parse_wire/1)
     |> find_intersections()
-    |> Enum.map(&distance/1)
+    |> Stream.map(&distance/1)
     |> Enum.min()
   end
 
@@ -15,7 +15,7 @@ defmodule Day3 do
   defp parse_wire(wire) do
     wire
     |> String.split(",")
-    |> Enum.map(fn dir_length ->
+    |> Stream.map(fn dir_length ->
       {direction, length} = String.split_at(dir_length, 1)
       {String.to_atom(direction), String.to_integer(length)}
     end)
@@ -46,7 +46,7 @@ defmodule Day3 do
   @spec find_intersections([coordinate()]) :: MapSet.t(coordinate())
   defp find_intersections(wires) do
     wires
-    |> Enum.map(&MapSet.new/1)
+    |> Stream.map(&MapSet.new/1)
     |> Enum.reduce(&MapSet.intersection/2)
   end
 
@@ -56,14 +56,14 @@ defmodule Day3 do
     intersections = find_intersections(wires)
 
     wires
-    |> Enum.map(fn wire ->
-      Enum.map(intersections, fn intersection ->
+    |> Stream.map(fn wire ->
+      Stream.map(intersections, fn intersection ->
         Enum.find_index(wire, &(intersection == &1)) + 1
       end)
     end)
-    |> Enum.zip()
-    |> Enum.map(&Tuple.to_list/1)
-    |> Enum.map(&Enum.sum/1)
+    |> Stream.zip()
+    |> Stream.map(&Tuple.to_list/1)
+    |> Stream.map(&Enum.sum/1)
     |> Enum.min()
   end
 end

@@ -7,7 +7,7 @@ defmodule Day4 do
     # check for adjacent matching digits
     |> Stream.filter(fn [_ | tail_list] = num_list ->
       num_list
-      |> Enum.zip(tail_list)
+      |> Stream.zip(tail_list)
       |> Enum.any?(fn {first_digit, second_digit} -> first_digit == second_digit end)
     end)
   end
@@ -17,7 +17,7 @@ defmodule Day4 do
     |> Stream.filter(fn num_list ->
       case num_list
            |> MapSet.new()
-           |> Enum.map(fn num -> {num, Enum.count(num_list, &(num == &1))} end)
+           |> Stream.map(fn num -> {num, Enum.count(num_list, &(num == &1))} end)
            |> Enum.find(fn {_, count} -> count == 2 end) do
         nil ->
           false
@@ -25,8 +25,8 @@ defmodule Day4 do
         {double_num, _} ->
           [first, second] =
             num_list
-            |> Enum.with_index()
-            |> Enum.filter(fn {num, _} -> num == double_num end)
+            |> Stream.with_index()
+            |> Stream.filter(fn {num, _} -> num == double_num end)
             |> Enum.map(&elem(&1, 1))
 
           second - first == 1
