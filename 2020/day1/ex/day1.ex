@@ -19,9 +19,13 @@ defmodule Day1 do
   end
 end
 
-System.argv()
-|> List.first()
-|> File.read!()
-|> String.splitter("\n", trim: true)
-|> Enum.map(&String.to_integer/1)
-|> Day1.part1()
+[part, input_file] = System.argv()
+
+nums =
+  input_file
+  |> File.read!()
+  |> String.splitter("\n", trim: true)
+  |> Enum.map(&String.to_integer/1)
+
+apply(Day1, String.to_atom(part), [nums])
+|> IO.puts()
