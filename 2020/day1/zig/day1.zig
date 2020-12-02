@@ -17,7 +17,7 @@ pub fn main() !void {
     // hehehe, hardcoding the input size
     try hash_set.ensureCapacity(200);
 
-    var spliterator = mem.split(mem.trimRight(u8, contents, "\n"), "\n");
+    var spliterator = mem.tokenize(file, "\n");
     while (spliterator.next()) |num_string| {
         const num = try std.fmt.parseUnsigned(u32, num_string, 10);
         hash_set.putAssumeCapacity(num, 0);
