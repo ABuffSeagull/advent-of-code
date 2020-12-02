@@ -1,6 +1,9 @@
 const std = @import("std");
 const fs = std.fs;
 const mem = std.mem;
+const fmt = std.fmt;
+const math = std.math;
+const print = std.debug.print;
 
 const HashSet = std.AutoHashMap(u32, u0);
 
@@ -19,7 +22,7 @@ pub fn main() !void {
 
     var spliterator = mem.tokenize(file, "\n");
     while (spliterator.next()) |num_string| {
-        const num = try std.fmt.parseUnsigned(u32, num_string, 10);
+        const num = try fmt.parseUnsigned(u32, num_string, 10);
         hash_set.putAssumeCapacity(num, 0);
     }
 
@@ -31,7 +34,7 @@ fn part1(hash_set: HashSet) void {
     while (entries.next()) |entry| {
         const other_num = 2020 - entry.key;
         if (hash_set.contains(other_num)) {
-            std.debug.print("{}\n", .{entry.key * other_num});
+            print("{}\n", .{entry.key * other_num});
             return;
         }
     }
@@ -43,9 +46,9 @@ fn part2(hash_set: HashSet) void {
         var entries_inner = hash_set.iterator();
         while (entries_inner.next()) |entry_inner| {
             // check for underflow
-            if (std.math.sub(u32, 2020 - entry_outer.key, entry_inner.key)) |third_num| {
+            if (math.sub(u32, 2020 - entry_outer.key, entry_inner.key)) |third_num| {
                 if (hash_set.contains(third_num)) {
-                    std.debug.print("{}\n", .{entry_outer.key * entry_inner.key * third_num});
+                    print("{}\n", .{entry_outer.key * entry_inner.key * third_num});
                     return;
                 }
                 // ignore underflows
