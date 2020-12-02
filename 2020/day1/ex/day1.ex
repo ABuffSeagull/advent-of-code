@@ -11,8 +11,7 @@ defmodule Day1 do
     nums_set = MapSet.new(nums)
 
     {num_a, num_b} =
-      nums_set
-      |> Stream.flat_map(fn num -> Enum.map(nums_set, &{num, &1}) end)
+      for(first <- nums_set, second <- nums_set, do: {first, second})
       |> Enum.find(fn {num_a, num_b} -> (2020 - num_a - num_b) in nums_set end)
 
     num_a * num_b * (2020 - num_a - num_b)
