@@ -52,3 +52,10 @@ defmodule Day2 do
     (letter_at_first or letter_at_second) and not (letter_at_first and letter_at_second)
   end
 end
+
+[part, input_file] = System.argv()
+
+line_stream = File.stream!(input_file)
+
+apply(Day2, String.to_atom(part), [line_stream])
+|> IO.puts()
