@@ -4,15 +4,12 @@ const mem = std.mem;
 
 const HashSet = std.AutoHashMap(u32, u0);
 
+const file = @embedFile("../input.txt");
+
 pub fn main() !void {
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     var allocator = &arena.allocator;
-
-    const file = try fs.cwd().openFile("../input.txt", .{});
-    defer file.close();
-
-    const contents = try file.readToEndAlloc(allocator, 10 * 1024 * 1024);
 
     var hash_set = HashSet.init(allocator);
     defer hash_set.deinit();
