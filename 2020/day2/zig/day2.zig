@@ -23,10 +23,10 @@ pub fn main() !void {
         // This honestly feels like a weird way to do it
         // Basically we're breaking the line on any of the given characters
         var line_iterator = mem.tokenize(token, "-: ");
-        const first_string = line_iterator.next() orelse unreachable;
-        const second_string = line_iterator.next() orelse unreachable;
-        const letter_string = line_iterator.next() orelse unreachable;
-        const password_string = line_iterator.next() orelse unreachable;
+        const first_string = line_iterator.next().?;
+        const second_string = line_iterator.next().?;
+        const letter_string = line_iterator.next().?;
+        const password_string = line_iterator.next().?;
         passwords[index] = .{
             .first_num = try fmt.parseUnsigned(u32, first_string, 10),
             .second_num = try fmt.parseUnsigned(u32, second_string, 10),
