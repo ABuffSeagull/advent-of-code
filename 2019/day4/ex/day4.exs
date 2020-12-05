@@ -1,8 +1,7 @@
 defmodule Day4 do
   def part1 do
     172_930..683_082
-    |> Stream.map(&Integer.to_string/1)
-    |> Stream.map(&String.graphemes/1)
+    |> Stream.map(&Integer.digits/1)
     |> Stream.filter(&(&1 == Enum.sort(&1)))
     # check for adjacent matching digits
     |> Stream.filter(fn [_ | tail_list] = num_list ->
