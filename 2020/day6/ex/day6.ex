@@ -22,17 +22,16 @@ defmodule Day6 do
     |> Enum.sum()
   end
 
-  defp all_letter_count(string) do
-    unique_letters =
-      string
-      |> String.splitter("", trim: true)
-      |> Enum.uniq()
-
-    answers = String.split(string, "\n", trim: true)
-
-    unique_letters
-    # Filter down to only the letters that are present in every answer
-    |> Stream.filter(fn letter -> Enum.all?(answers, &(&1 =~ letter)) end)
+  def all_letter_count(string) do
+    string
+    # Split to indivdual answers
+    |> String.splitter("\n", trim: true)
+    # Split each answer on letters
+    |> Stream.map(&String.splitter(&1, "", trim: true))
+    # Turn each answer into a Set
+    |> Stream.map(&MapSet.new/1)
+    # Intersect all sets to find the common letters
+    |> Enum.reduce(&MapSet.intersection/2)
     |> Enum.count()
   end
 end
