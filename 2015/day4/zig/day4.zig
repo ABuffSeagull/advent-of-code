@@ -3,21 +3,38 @@ const md5 = std.crypto.hash.Md5;
 const math = std.math;
 const mem = std.mem;
 const fmt = std.fmt;
+const Thread = std.Thread;
+
+var is_done = false;
+
+const Context = struct {
+    total_threads: usize,
+    offset: usize,
+};
 
 const zero_buffer = [_]u8{0} ** 3;
-var input_buffer = [_]u8{0} ** 32; // 32 is just a nice number, nothing more than that
-var hash_buffer = [_]u8{0} ** md5.digest_length;
+threadlocal var input_buffer = [_]u8{0} ** 32; // 32 is just a nice number, nothing more than that
+threadlocal var hash_buffer = [_]u8{0} ** md5.digest_length;
 
 const password = "iwrupvqb";
 
 pub fn main() !void {
-    var last_timestamp = std.time.timestamp();
+    var threads = [_]*Thread{undefined} ** 1;
 
-    // Zero would throw an error with log10, and honestly it's not gonna be zero
-    var index: u64 = 1;
+    for (threads) |_, index| {
+        threads[index] = try Thread.spawn(Context{ .total_threads = threads.len, .offset = index + 1 }, run_hashes);
+    }
 
-    while (true) : (index += 1) {
-        _ = try fmt.bufPrint(&input_buffer, "{}{}", .{ password, index });
+    for (threads) |thread| thread.wait();
+}
+
+fn run_hashes(context: Context) void {
+    var index: u64 = context.offset;
+
+    while (true) : (index += context.total_threads) {
+        if (is_done) return;
+
+        _ = fmt.bufPrint(&input_buffer, "{}{}", .{ password, index }) catch unreachable;
 
         const digits = math.log10(index) + 1;
         const input = input_buffer[0..(password.len + digits)];
@@ -28,6 +45,6 @@ pub fn main() !void {
             break;
         }
     }
-
+    is_done = true;
     std.debug.print("index: {}, hash: {x}\n", .{ index, hash_buffer });
 }
