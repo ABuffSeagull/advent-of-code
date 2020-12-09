@@ -5,30 +5,33 @@ defmodule Day9 do
       |> String.splitter("\n", trim: true)
       |> Enum.map(&String.to_integer/1)
 
-    bad_index =
-      preamble_length..(length(numbers) - 1)
-      |> Enum.find(&valid_number?(numbers, preamble_length, &1))
+    bad_slice =
+      numbers
+      |> Stream.iterate(&tl/1)
+      |> Stream.map(&Enum.take(&1, preamble_length + 1))
+      |> Enum.find(&not_valid_slice?(&1))
 
-    Enum.at(numbers, bad_index)
+    List.last(bad_slice)
   end
 
-  def valid_number?(numbers, preamble_length, index) do
-    current_num = Enum.at(numbers, index)
+  def not_valid_slice?(slice) do
+    [num_to_check | rest] = Enum.reverse(slice)
 
-    current_slice = Enum.slice(numbers, index - preamble_length, preamble_length)
-
-    not Enum.any?(current_slice, fn number ->
-      (current_num - number) in current_slice
+    not Enum.any?(rest, fn other_num ->
+      (num_to_check - other_num) in rest
     end)
   end
 
   def part2(input, preamble_length) do
     bad_number = part1(input, preamble_length)
 
-    {min, max} =
+    numbers =
       input
       |> String.splitter("\n", trim: true)
       |> Enum.map(&String.to_integer/1)
+
+    {min, max} =
+      numbers
       |> Stream.iterate(&tl/1)
       |> Stream.map(&subtract_to_non_positive(&1, bad_number))
       |> Enum.find_value(fn
