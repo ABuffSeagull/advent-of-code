@@ -1,33 +1,61 @@
 defmodule Day7 do
   @line_regex ~r/^(?<color>.*?) bags contain (?<contains>.*)\.$/
 
-  @contains_regex ~r/^\d+ (?<color>.*?) bags?$/
+  @contains_regex ~r/^(?<number>\d+) (?<color>.*?) bags?$/
 
   def part1(input) do
     rules =
       input
       |> String.splitter("\n", trim: true)
-      |> Stream.map(&parse_line/1)
+      |> Stream.map(&parse_line_inner_to_outer/1)
       |> Enum.reduce(&merge_maps/2)
 
-    find_all_colors(["shiny gold"], rules, [])
-    |> Stream.uniq()
-    |> Enum.count()
+    total_colors =
+      find_all_colors(rules, "shiny gold")
+      |> List.flatten()
+      |> Stream.uniq()
+      |> Enum.count()
+
+    # since this includes "shiny gold" itself
+    total_colors - 1
   end
 
-  def parse_line(line) when is_binary(line) do
+  def part2(input) do
+    rules =
+      input
+      |> String.splitter("\n", trim: true)
+      |> Stream.map(&parse_line_outer_to_inner/1)
+      |> Enum.reduce(&merge_maps/2)
+
+    find_all_containing_bags(rules, "shiny gold")
+  end
+
+  def parse_line_inner_to_outer(line) do
     [_total, outer_color, contains] = Regex.run(@line_regex, line)
 
     contains
     |> String.splitter(", ", trim: true)
     |> Stream.map(&parse_contains/1)
     |> Stream.filter(& &1)
+    |> Stream.map(fn {_number, color} -> color end)
     |> Map.new(&{&1, [outer_color]})
   end
 
-  def parse_contains(contains) when is_binary(contains) do
+  def parse_line_outer_to_inner(line) do
+    [_total, outer_color, contains] = Regex.run(@line_regex, line)
+
+    %{
+      outer_color =>
+        contains
+        |> String.splitter(", ", trim: true)
+        |> Stream.map(&parse_contains/1)
+        |> Enum.filter(& &1)
+    }
+  end
+
+  def parse_contains(contains) do
     case Regex.run(@contains_regex, contains) do
-      [_total, color] -> color
+      [_total, number, color] -> {String.to_integer(number), color}
       nil -> nil
     end
   end
@@ -40,13 +68,27 @@ defmodule Day7 do
     total
   end
 
-  def find_all_colors([color | rest], rules, total) do
+  def find_all_colors(rules, color) do
     case rules[color] do
       nil ->
-        find_all_colors(rest, rules, total)
+        color
 
       colors ->
-        find_all_colors(colors ++ rest, rules, colors ++ total)
+        [color | Enum.map(colors, &find_all_colors(rules, &1))]
+    end
+  end
+
+  def find_all_containing_bags(rules, current_color) do
+    case rules[current_color] do
+      [] ->
+        0
+
+      colors ->
+        colors
+        |> Enum.map(fn {count, color} ->
+          count + count * find_all_containing_bags(rules, color)
+        end)
+        |> Enum.sum()
     end
   end
 end
