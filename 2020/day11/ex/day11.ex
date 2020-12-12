@@ -3,12 +3,35 @@ defmodule Day11 do
     grid = parse_input(input)
 
     grid
-    |> update_grid()
+    |> update_grid(&update_cell_part_1/1)
     |> Enum.count(fn {_, value} -> value == :occupied end)
   end
 
-  def update_grid(grid) do
-    update_cell = fn {coord, cell} ->
+  def part2(input) do
+    grid = parse_input(input)
+
+    grid
+    |> update_grid(&update_cell_part_2/1)
+    |> Enum.count(fn {_, cell} -> cell == :occupied end)
+  end
+
+  def update_grid(grid, update_function) do
+    update_cell = update_function.(grid)
+
+    new_grid =
+      grid
+      |> Stream.map(update_cell)
+      |> Map.new()
+
+    unless new_grid == grid do
+      update_grid(new_grid, update_function)
+    else
+      new_grid
+    end
+  end
+
+  def update_cell_part_1(grid) do
+    fn {coord, cell} ->
       {row, column} = coord
 
       adjacent_coords =
@@ -32,29 +55,10 @@ defmodule Day11 do
           {coord, cell}
       end
     end
-
-    new_grid =
-      grid
-      |> Stream.map(update_cell)
-      |> Map.new()
-
-    unless new_grid == grid do
-      update_grid(new_grid)
-    else
-      new_grid
-    end
   end
 
-  def part2(input) do
-    grid = parse_input(input)
-
-    grid
-    |> update_grid_2()
-    |> Enum.count(fn {_, cell} -> cell == :occupied end)
-  end
-
-  def update_grid_2(grid) do
-    update_cell = fn {coord, cell} ->
+  def update_cell_part_2(grid) do
+    fn {coord, cell} ->
       first_possible_seats =
         for x <- [-1, 0, 1], y <- [-1, 0, 1], !(x == 0 and y == 0) do
           coord
@@ -76,17 +80,6 @@ defmodule Day11 do
         true ->
           {coord, cell}
       end
-    end
-
-    new_grid =
-      grid
-      |> Stream.map(update_cell)
-      |> Map.new()
-
-    unless new_grid == grid do
-      update_grid_2(new_grid)
-    else
-      new_grid
     end
   end
 
@@ -137,6 +130,7 @@ defmodule Day11 do
         end_time = Time.utc_now()
 
         Time.diff(end_time, start_time, :millisecond)
+        |> IO.inspect(label: "time")
       end)
       |> Enum.sum()
 
