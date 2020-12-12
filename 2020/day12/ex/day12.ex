@@ -70,4 +70,63 @@ defmodule Day12 do
         follow_directions({facing, amount}, acc)
     end
   end
+
+  def part2(input) do
+    instructions =
+      input
+      |> String.splitter("\n", trim: true)
+      |> Enum.map(&parse_line/1)
+
+    ship = {0, 0}
+    waypoint = {10, 1}
+
+    {{x, y}, _} = Enum.reduce(instructions, {ship, waypoint}, &follow_waypoint_instructions/2)
+
+    abs(x) + abs(y)
+  end
+
+  def follow_waypoint_instructions(instruction, {ship, waypoint}) do
+    {waypoint_x, waypoint_y} = waypoint
+
+    case instruction do
+      {:north, amount} ->
+        {ship, {waypoint_x, waypoint_y + amount}}
+
+      {:south, amount} ->
+        {ship, {waypoint_x, waypoint_y - amount}}
+
+      {:east, amount} ->
+        {ship, {waypoint_x + amount, waypoint_y}}
+
+      {:west, amount} ->
+        {ship, {waypoint_x - amount, waypoint_y}}
+
+      {:turn_right, amount} ->
+        steps =
+          amount
+          |> div(90)
+          |> rem(4)
+
+        case steps do
+          0 ->
+            {ship, waypoint}
+
+          1 ->
+            {ship, {waypoint_y, -waypoint_x}}
+
+          2 ->
+            {ship, {-waypoint_x, -waypoint_y}}
+
+          3 ->
+            {ship, {-waypoint_y, waypoint_x}}
+        end
+
+      {:turn_left, amount} ->
+        follow_waypoint_instructions({:turn_right, 360 - amount}, {ship, waypoint})
+
+      {:forward, amount} ->
+        {ship_x, ship_y} = ship
+        {{ship_x + waypoint_x * amount, ship_y + waypoint_y * amount}, waypoint}
+    end
+  end
 end
