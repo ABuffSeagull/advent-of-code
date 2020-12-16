@@ -17,25 +17,21 @@ const equal_bytes = 3;
 const password = "iwrupvqb";
 
 pub fn main() !void {
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    defer arena.deinit();
-    var allocator = &arena.allocator;
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    defer _ = gpa.deinit();
 
-    var args = std.process.args();
-    _ = args.skip();
-    const num_threads = try fmt.parseUnsigned(usize, try args.next(allocator).?, 10);
+    var threads = try gpa.allocator.alloc(*Thread, Thread.cpuCount() catch 1);
+    defer gpa.allocator.free(threads);
 
-    var threads = try allocator.alloc(*Thread, num_threads);
-
-    for (threads) |_, index| {
-        threads[index] = try Thread.spawn(Context{ .total_threads = threads.len, .offset = index + 1 }, run_hashes);
+    for (threads) |*thread, index| {
+        thread.* = try Thread.spawn(Context{ .total_threads = threads.len, .offset = index + 1 }, run_hashes);
     }
 
     for (threads) |thread| thread.wait();
 }
 
 const zero_buffer = [_]u8{0} ** equal_bytes;
-threadlocal var input_buffer = [_]u8{0} ** 128;
+threadlocal var input_buffer = [_]u8{0} ** (1 << 8);
 threadlocal var hash_buffer = [_]u8{0} ** md5.digest_length;
 
 fn run_hashes(context: Context) void {
@@ -51,7 +47,7 @@ fn run_hashes(context: Context) void {
 
         md5.hash(input, &hash_buffer, .{});
 
-        if (mem.eql(u8, &zero_buffer, hash_buffer[0..equal_bytes])) break;
+        if (mem.startsWith(u8, &hash_buffer, &zero_buffer)) break;
     }
     is_done = true;
     std.debug.print("index: {}, hash: {x}\n", .{ index, hash_buffer });
