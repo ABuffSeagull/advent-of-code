@@ -6,6 +6,7 @@ const Vector = struct {
     x: i64 = 0,
     y: i64 = 0,
     z: i64 = 0,
+    w: i64 = 0,
 };
 
 const CubeList = std.ArrayList(Vector);
@@ -24,7 +25,7 @@ pub fn main() !void {
         for (input) |char| {
             switch (char) {
                 '#' => {
-                    try activated_cubes.put(.{ .y = row, .x = column }, 0);
+                    try activated_cubes.put(.{ .y = row, .x = column, .w = 0 }, 0);
                     column += 1;
                 },
                 '.' => column += 1,
@@ -41,11 +42,13 @@ pub fn main() !void {
         .x = std.math.maxInt(i64),
         .y = std.math.maxInt(i64),
         .z = std.math.maxInt(i64),
+        .w = std.math.maxInt(i64),
     };
     var max_vector = Vector{
         .x = std.math.minInt(i64),
         .y = std.math.minInt(i64),
         .z = std.math.minInt(i64),
+        .w = std.math.minInt(i64),
     };
 
     {
@@ -56,11 +59,13 @@ pub fn main() !void {
                 .x = std.math.min(current.x, min_vector.x),
                 .y = std.math.min(current.y, min_vector.y),
                 .z = std.math.min(current.z, min_vector.z),
+                .w = std.math.min(current.w, min_vector.w),
             };
             max_vector = .{
                 .x = std.math.max(current.x, max_vector.x),
                 .y = std.math.max(current.y, max_vector.y),
                 .z = std.math.max(current.z, max_vector.z),
+                .w = std.math.max(current.w, max_vector.w),
             };
         }
     }
@@ -78,14 +83,17 @@ pub fn main() !void {
             while (y_index <= max_vector.y + 1) : (y_index += 1) {
                 var x_index = min_vector.x - 1;
                 while (x_index <= max_vector.x + 1) : (x_index += 1) {
-                    const coord = Vector{ .z = z_index, .y = y_index, .x = x_index };
-                    var count = getSurroundingCubes(activated_cubes, coord);
+                    var w_index = min_vector.w - 1;
+                    while (w_index <= max_vector.w + 1) : (w_index += 1) {
+                        const coord = Vector{ .z = z_index, .y = y_index, .x = x_index, .w = w_index };
+                        var count = getSurroundingCubes(activated_cubes, coord);
 
-                    if (activated_cubes.contains(coord)) {
-                        // adding one to the count, as it includes itself
-                        if (count != 3 and count != 4) try cubes_to_deactivate.append(coord);
-                    } else {
-                        if (count == 3) try cubes_to_activate.append(coord);
+                        if (activated_cubes.contains(coord)) {
+                            // adding one to the count, as it includes itself
+                            if (count != 3 and count != 4) try cubes_to_deactivate.append(coord);
+                        } else {
+                            if (count == 3) try cubes_to_activate.append(coord);
+                        }
                     }
                 }
             }
@@ -100,11 +108,13 @@ pub fn main() !void {
                 .x = std.math.min(coord.x, min_vector.x),
                 .y = std.math.min(coord.y, min_vector.y),
                 .z = std.math.min(coord.z, min_vector.z),
+                .w = std.math.min(coord.w, min_vector.w),
             };
             max_vector = .{
                 .x = std.math.max(coord.x, max_vector.x),
                 .y = std.math.max(coord.y, max_vector.y),
                 .z = std.math.max(coord.z, max_vector.z),
+                .w = std.math.max(coord.w, max_vector.w),
             };
         }
     }
@@ -119,12 +129,15 @@ fn getSurroundingCubes(cube_list: std.AutoHashMap(Vector, u0), coord: Vector) us
     for (offsets) |offset_z| {
         for (offsets) |offset_y| {
             for (offsets) |offset_x| {
-                var check_coord = Vector{
-                    .x = coord.x + offset_x,
-                    .y = coord.y + offset_y,
-                    .z = coord.z + offset_z,
-                };
-                if (cube_list.contains(check_coord)) activated_count += 1;
+                for (offsets) |offset_w| {
+                    var check_coord = Vector{
+                        .x = coord.x + offset_x,
+                        .y = coord.y + offset_y,
+                        .z = coord.z + offset_z,
+                        .w = coord.w + offset_w,
+                    };
+                    if (cube_list.contains(check_coord)) activated_count += 1;
+                }
             }
         }
     }
