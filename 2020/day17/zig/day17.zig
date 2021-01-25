@@ -16,7 +16,7 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     var allocator = &gpa.allocator;
 
-    var activated_cubes = std.AutoHashMap(Vector, u0).init(allocator);
+    var activated_cubes = std.AutoHashMap(Vector, void).init(allocator);
     defer activated_cubes.deinit();
 
     {
@@ -25,7 +25,7 @@ pub fn main() !void {
         for (input) |char| {
             switch (char) {
                 '#' => {
-                    try activated_cubes.put(.{ .y = row, .x = column, .w = 0 }, 0);
+                    try activated_cubes.put(.{ .y = row, .x = column, .w = 0 }, {});
                     column += 1;
                 },
                 '.' => column += 1,
@@ -103,7 +103,7 @@ pub fn main() !void {
         }
 
         for (cubes_to_activate.items) |coord| {
-            try activated_cubes.put(coord, 0);
+            try activated_cubes.put(coord, {});
             min_vector = .{
                 .x = std.math.min(coord.x, min_vector.x),
                 .y = std.math.min(coord.y, min_vector.y),
@@ -124,7 +124,7 @@ pub fn main() !void {
 
 const offsets = [_]i64{ -1, 0, 1 };
 
-fn getSurroundingCubes(cube_list: std.AutoHashMap(Vector, u0), coord: Vector) usize {
+fn getSurroundingCubes(cube_list: std.AutoHashMap(Vector, void), coord: Vector) usize {
     var activated_count: usize = 0;
     for (offsets) |offset_z| {
         for (offsets) |offset_y| {

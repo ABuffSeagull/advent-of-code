@@ -5,7 +5,7 @@ const fmt = std.fmt;
 const math = std.math;
 const print = std.debug.print;
 
-const HashSet = std.AutoHashMap(u32, u0);
+const HashSet = std.AutoHashMap(usize, void);
 
 const file = @embedFile("../input.txt");
 
@@ -22,8 +22,8 @@ pub fn main() !void {
 
     var spliterator = mem.tokenize(file, "\n");
     while (spliterator.next()) |num_string| {
-        const num = try fmt.parseUnsigned(u32, num_string, 10);
-        hash_set.putAssumeCapacity(num, 0);
+        const num = try fmt.parseUnsigned(usize, num_string, 10);
+        hash_set.putAssumeCapacity(num, {});
     }
 
     part2(hash_set);
@@ -46,7 +46,7 @@ fn part2(hash_set: HashSet) void {
         var entries_inner = hash_set.iterator();
         while (entries_inner.next()) |entry_inner| {
             // check for underflow
-            if (math.sub(u32, 2020 - entry_outer.key, entry_inner.key)) |third_num| {
+            if (math.sub(usize, 2020 - entry_outer.key, entry_inner.key)) |third_num| {
                 if (hash_set.contains(third_num)) {
                     print("{}\n", .{entry_outer.key * entry_inner.key * third_num});
                     return;
