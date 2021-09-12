@@ -24,23 +24,22 @@ pub fn main() !void {
     defer gpa.allocator.free(threads);
 
     for (threads) |*thread, index| {
-        thread.* = try Thread.spawn(Context{ .total_threads = threads.len, .offset = index + 1 }, run_hashes);
+        thread.* = try Thread.spawn(run_hashes, Context{ .total_threads = threads.len, .offset = index + 1 });
     }
 
     for (threads) |thread| thread.wait();
 }
 
 const zero_buffer = [_]u8{0} ** equal_bytes;
-threadlocal var input_buffer = [_]u8{0} ** (1 << 8);
-threadlocal var hash_buffer = [_]u8{0} ** md5.digest_length;
+threadlocal var input_buffer = [_]u8{undefined} ** (1 << 8);
+threadlocal var hash_buffer = [_]u8{undefined} ** md5.digest_length;
 
 fn run_hashes(context: Context) void {
     var index: u64 = context.offset;
 
     while (true) : (index += context.total_threads) {
         if (is_done) return;
-
-        _ = fmt.bufPrint(&input_buffer, "{}{}", .{ password, index }) catch unreachable;
+        _ = fmt.bufPrint(&input_buffer, "{s}{d}", .{ password, index }) catch unreachable;
 
         const digits = math.log10(index) + 1;
         const input = input_buffer[0..(password.len + digits)];
@@ -50,5 +49,5 @@ fn run_hashes(context: Context) void {
         if (mem.startsWith(u8, &hash_buffer, &zero_buffer)) break;
     }
     is_done = true;
-    std.debug.print("index: {}, hash: {x}\n", .{ index, hash_buffer });
+    std.debug.print("index: {}, hash: {}\n", .{ index, fmt.fmtSliceHexLower(&hash_buffer) });
 }
