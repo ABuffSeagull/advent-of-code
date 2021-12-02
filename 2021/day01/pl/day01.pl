@@ -10,6 +10,13 @@ part1(File, Count) :-
     filter_increasing(Paired, Filtered),
     length(Filtered, Count).
 
+part2(File, Count) :-
+    phrase_from_file(numbers(Nums), File),
+    window_sums(Nums, Windows),
+    zip_adjacent(Windows, Paired),
+    filter_increasing(Paired, Filtered),
+    length(Filtered, Count).
+
 zip_adjacent([], []).
 zip_adjacent([_], []).
 zip_adjacent([First, Second | Tail], Output) :-
@@ -24,3 +31,10 @@ filter_increasing([[First, Second] | Tail], Output) :-
 filter_increasing([[First, Second] | Tail], Output) :-
     First #>= Second,
     filter_increasing(Tail, Output).
+
+window_sums([], []).
+window_sums([_], []).
+window_sums([_, _], []).
+window_sums([First, Second, Third | Tail], Zipped) :-
+    window_sums([Second, Third | Tail], Rest),
+    Zipped = [First + Second + Third | Rest].
