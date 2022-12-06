@@ -10,7 +10,12 @@ pub fn main() !void {
 
     const input = try std.fs.cwd().readFile("../input.txt", &input_buffer);
 
-    var overlapping_pairs: usize = 0;
+    try part1(ally, input);
+    try part2(ally, input);
+}
+
+fn part1(ally: std.mem.Allocator, input: []const u8) !void {
+    var contained_pairs: usize = 0;
 
     var line_it = std.mem.tokenize(u8, input, "\n");
     var index: usize = 0;
@@ -34,11 +39,39 @@ pub fn main() !void {
         const after = first.count();
 
         if (before_first == after or before_second == after) {
+            contained_pairs += 1;
+        }
+    }
+
+    std.debug.print("Contained Pairs: {}\n", .{contained_pairs});
+}
+
+fn part2(ally: std.mem.Allocator, input: []const u8) !void {
+    var overlapping_pairs: usize = 0;
+
+    var line_it = std.mem.tokenize(u8, input, "\n");
+    var index: usize = 0;
+    while (line_it.next()) |line| {
+        defer index += 1;
+        var pair_it = std.mem.tokenize(u8, line, ",");
+
+        var first = try parsePair(ally, pair_it.next().?);
+        defer first.deinit();
+        var second = try parsePair(ally, pair_it.next().?);
+        defer second.deinit();
+
+        const max_size = std.math.max(first.capacity(), second.capacity());
+        try first.resize(max_size, false);
+        try second.resize(max_size, false);
+
+        first.setIntersection(second);
+
+        if (first.count() > 0) {
             overlapping_pairs += 1;
         }
     }
 
-    std.debug.print("Pairs: {}\n", .{overlapping_pairs});
+    std.debug.print("Overlapping Pairs: {}\n", .{overlapping_pairs});
 }
 
 fn parsePair(ally: std.mem.Allocator, input: []const u8) !std.DynamicBitSet {
