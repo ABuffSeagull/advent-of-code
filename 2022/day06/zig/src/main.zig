@@ -1,28 +1,27 @@
 const std = @import("std");
 
 pub fn main() !void {
-    var input_buffer = [_]u8{undefined} ** (1024 * 1024);
-    const input = try std.fs.cwd().readFile("../input.txt", &input_buffer);
+    const input = @embedFile("./input.txt");
 
     std.debug.print("part1: {}, part2: {}\n", .{
-        findMarker(input, 4),
-        findMarker(input, 14),
+        findMarker(4, input),
+        findMarker(14, input),
     });
 }
 
-fn findMarker(input: []const u8, unique_char_count: usize) usize {
+fn findMarker(comptime window_size: usize, input: []const u8) usize {
     var index: usize = 0;
-    while (index + unique_char_count < input.len) : (index += 1) {
-        const slice = input[index .. index + unique_char_count];
-
-        var bit_set = std.StaticBitSet(std.math.maxInt(u8)).initEmpty();
-
-        for (slice) |char| bit_set.set(char);
-
-        if (bit_set.count() == unique_char_count) {
-            break;
+    while (index + window_size < input.len) : (index += 1) {
+        // fill in SIMD vector
+        const chars: @Vector(window_size, u8) = input[index..][0..window_size].*;
+        // change from ascii to letter position, to save some bits
+        const offsets = chars - @splat(window_size, @as(u8, 'a'));
+        // change from offsets value to bit position
+        const bit_set = @splat(window_size, @as(u32, 1)) << @truncate(u5, offsets);
+        // count how many bits are set
+        if (@popCount(@reduce(.Or, bit_set)) == window_size) {
+            return index + window_size;
         }
     }
-
-    return index + unique_char_count;
+    unreachable;
 }
