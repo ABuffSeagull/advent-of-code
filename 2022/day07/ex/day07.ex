@@ -85,4 +85,38 @@ defmodule Day07 do
   defp count_dirs(%MyFile{} = file) do
     {0, file.size}
   end
+
+  def part2(filename) do
+    filesystem = parse_filesystem(filename)
+
+    sizes =
+      filesystem
+      |> get_directory_sizes()
+      |> Enum.sort(:desc)
+
+    unused_space = 30_000_000 - (70_000_000 - List.first(sizes))
+
+    sizes
+    # |> Enum.take_while(& &1 > unused_space)
+    # |> List.last()
+  end
+
+  def get_directory_sizes(%MyFolder{} = folder) do
+    {folders, files} =
+      folder.children
+      |> Stream.map(fn {_, entry} -> entry end)
+      |> Enum.split_with(&is_struct(&1, MyFolder))
+
+    files_size =
+      files
+      |> Stream.map(& &1.size)
+      |> Enum.sum()
+
+    folders_size =
+      folders
+      |> Enum.map(&get_directory_sizes/1)
+      |> List.flatten()
+
+    [files_size + Enum.sum(folders_size) | folders_size]
+  end
 end
