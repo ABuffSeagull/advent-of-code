@@ -77,9 +77,25 @@ pub fn main() !void {
     const writer = std.io.getStdOut().writer();
     try printEntry(writer, .{ .folder = root }, 0);
 
+    // Part 1
     const sizes = try filterDirectories(root);
+    std.debug.print("part1: {}\n", .{sizes.total});
 
-    std.debug.print("{any}\n", .{sizes});
+    var directories = FolderList.init(ally);
+    _ = try calculateDirectories(&directories, &root);
+
+    std.sort.sort(FolderSize, directories.items, {}, sortFolders);
+
+    const free_space = 70_000_000 - directories.items[directories.items.len - 1].@"1";
+    const min_size = 30_000_000 - free_space;
+
+    for (directories.items) |folder| {
+        if (folder.@"1" > min_size) {
+            std.debug.print("to delete: {s} {}\n", folder);
+            break;
+        }
+    }
+    // std.debug.print("{any}\n", .{directories.items});
 }
 
 const Sizes = struct {
@@ -124,4 +140,26 @@ fn printEntry(writer: anytype, entry: Entry, indent: usize) !void {
             try writer.print("- {s} (file, size={})\n", .{ file.name, file.size });
         },
     }
+}
+
+const FolderSize = std.meta.Tuple(&.{ []const u8, usize });
+const FolderList = std.ArrayList(FolderSize);
+fn calculateDirectories(folders: *FolderList, folder: *const Folder) !usize {
+    var size: usize = 0;
+
+    for (folder.children.entries.items(.value)) |child| switch (child) {
+        .file => |file| {
+            size += file.size;
+        },
+        .folder => |*f| {
+            size += try calculateDirectories(folders, f);
+        },
+    };
+
+    try folders.append(.{ folder.name, size });
+    return size;
+}
+
+fn sortFolders(_: void, left: FolderSize, right: FolderSize) bool {
+    return left.@"1" < right.@"1";
 }
