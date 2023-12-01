@@ -5,6 +5,5 @@ part1 =: monad : 0
 digits =: '0123456789'
 
 parse_line =: monad : 0
-  found =. y ([-.-.) digits
-  __ ". ({.found),({:found)
+  __ ". ({.,{:) y ([-.-.) digits
 )
