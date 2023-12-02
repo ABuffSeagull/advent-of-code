@@ -4,7 +4,7 @@ part1 =: {{
 
 parse_line =: {{
 	data =. (2+i.&':' y ) }. y
-	*./,/ 12 13 14 >"1 parse_chunk&> '; ' splitstring data
+	*./,/ 12 13 14 >:"1 parse_chunk&> '; ' splitstring data
 }}
 
 parse_chunk =: {{
