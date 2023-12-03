@@ -22,3 +22,12 @@ get_num =: {{
 	has_color =. +./ x E. y
 	num * has_color
 }}
+
+part2 =: {{
+	+/parse_line2&> }: LF splitstring y
+}}
+
+parse_line2 =: {{
+	data =. (2+i.&':' y ) }. y
+	*/ {. |: (\:~)"1 |: parse_chunk&> '; ' splitstring data
+}}
