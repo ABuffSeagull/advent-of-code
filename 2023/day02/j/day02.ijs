@@ -1,5 +1,5 @@
 part1 =: {{
-    +/1+I. parse_line&> }: LF splitstring y
+	+/1+I. parse_line&> }: LF splitstring y
 }}
 
 parse_line =: {{
@@ -14,11 +14,11 @@ parse_chunk =: {{
 colors =: ;: 'red green blue'
 
 parse_pull =: {{
-    (get_num&y)&> colors
+	(get_num&y)&> colors
 }}
 
 get_num =: {{
-    num =. {. __ ". y
+	num =. {. __ ". y
 	has_color =. +./ x E. y
 	num * has_color
 }}
