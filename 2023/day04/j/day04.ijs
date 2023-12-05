@@ -1,9 +1,11 @@
 part1 =: {{
-	+/ (I.@(1&<:) { ]) parse_line&> }: LF splitstring y
+	+/ (I.@(1&<:) { ]) points&> }: LF splitstring y
 }}
 
-parse_line =: {{
-	chunks =. _&".&.> '|' splitstring ((1&+@i.&':') }. ]) y
+parse_chunks =: {{ _&".&.> '|' splitstring ((1&+@i.&':') }. ]) y }}
+
+points =: {{
+	chunks =. parse_chunks y
 	card =. >{. chunks
 	ours =. >{: chunks
 
