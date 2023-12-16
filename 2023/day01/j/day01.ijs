@@ -1,9 +1,7 @@
 part1 =: monad : 0
-  +/parse_line"1 >LF splitstring y
+  +/>parse_line&.> LF splitstring y
 )
 
-digits =: '0123456789'
-
 parse_line =: monad : 0
-  __ ". ({.,{:) y ([-.-.) digits
+ {. __ ". ({.,{:) y ([-.-.) '0123456789'
 )
