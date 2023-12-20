@@ -6,9 +6,9 @@ RunMap ← (|2
   # Spread array on stack
   ⊙(°[⊙⊙∘]):
   # Get offset from start
-  :⊙(↧⊃(≥|≥0)).-:
+  :⊙(↧⊃(>|≥0)).-:
   # Get mapped value
-  /+☇0×¤⊙⊟
+  /+♭×¤⊙⊟
   # Return original if mapping is 0
   (∘|⋅∘) =0 .
 )
@@ -23,4 +23,6 @@ RunMap ← (|2
   )
 )
 ⋕ SplitString @\s °□⊡0_1 regex "seeds:\\s((?:\\d+ ?)+)":
-/↧≡(⊐∧RunMap:)⊙¤
+&p$"Part 1: _" /↧≡(⊐∧RunMap:),,⊙¤
+
+&p$"Part 2: _" /↧≡(⊐∧RunMap:)⊐/⊂≡(□+⇡°⊟⇌)⊕∘⌊÷2⇡⧻.
