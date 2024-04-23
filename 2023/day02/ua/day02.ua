@@ -44,8 +44,6 @@ ParsePull ← (
   ≡◇ParseColor
   # Add colors together
   /+
-  # Make sure all are less than limits
-  /↧≤12_13_14
 )
 
 ParseLine ← (
@@ -55,13 +53,26 @@ ParseLine ← (
   ⊜□¬⦷"; ".
   # Do all pulls
   ≡◇ParsePull
-  # And them together
-  /↧
 )
 
 # Split lines
-⊜□⊸≠@\n &fras ⊡1 &args
+.⊜□⊸≠@\n &fras ⊡1 &args
 # Parse Lines
-≡◇ParseLine
+≡◇(
+  ParseLine
+  # Make sure all are less than limits
+  ≤¤12_13_14
+  # And them together
+  /↧♭
+)
 # Find each index, +1 for id, sum
 &p$"Part 1: _" /+ +1 ⊚
+
+≡◇(
+  ParseLine
+  # Find max amount of each color
+  /↥
+  # Find the "power"
+  /×
+)
+&p$"Part 2: _" /+
