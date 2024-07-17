@@ -1,13 +1,16 @@
-SplitString ← (|2 ⊜□≠,)
+~ "../../utils.ua" ~ Split!
 
-SplitString @\n &fras ⊡1 &args
+Split!□ @\n &fras ⊡1 &args
 # Get directions
 °□⊃(⊢|↘1)
 ⊙(
-  # Parse lines
-  ≡(≡°□↘1♭regex "(\\w{3}) = \\((\\w{3}), (\\w{3})\\)")
-  # Split out mapping
-  ⊃(≡⊢|≡↘1)
+  ≡(
+    # Parse line
+    °$"_ = (_, _)"
+    # Couple LR directions
+    ⊙⊟
+  )
+  map
   # Add initial location
   "AAA"
 )
@@ -16,12 +19,7 @@ SplitString @\n &fras ⊡1 &args
   # Inside counter
   ⊙(
     # Inside directions
-    ⊙(
-      # Duplicate mapping
-      ⊙,⊙,
-      # Get current mapping
-      ⊏⊢⊚≡≍¤
-    )
+    ⊙(⊸get)
     # Get correct branch
     ⊙(⊏=@R⊢).
     # Rotate directions
@@ -30,4 +28,4 @@ SplitString @\n &fras ⊡1 &args
   # Add counter
   +1
 )(¬≍"ZZZ":⊙,)
-;;;;&p$"Part 1: _"
+&p$"Part 1: _"⊙⋅⋅⋅
