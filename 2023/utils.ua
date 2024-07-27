@@ -1,3 +1,3 @@
 # Split string on delimiter, running function
-# ? delimiter text
+# split_text ? delimiter text
 Split! ← (⊜^! ≠,)
