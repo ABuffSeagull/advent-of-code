@@ -1,13 +1,14 @@
-# Experimental!
+~ "../../utils.ua" ~ Split!
 
+# NewNumber ? List
 Extrapolate ← |1 (
-  # Count Zeros
-  =0/+.
+  # Is all zero?
+  ≠0/+ .
 
-  ⟨
-    |1 # Not all zero
+  ⍥(|1
+    # Not all zero
     # Dupe, then subtract adjacent numbers
-    -,↻1.
+    -,↻1 .
 
     # Drop last useless value
     ↘¯1
@@ -16,13 +17,13 @@ Extrapolate ← |1 (
     Extrapolate
     # Add last value of row
     +
-  | ∘
-  ⟩
+  )
 
   # Take last element of array
   ⊏¯1
 )
 
-⊜(⊜⋕ ≠ @\s .) ≠ @\n . &fras ⊏1 &args
+&fras ⊏1 &args
+Split!(Split!⋕ @\s) @\n
 
-&p$"Part 1: _" /+≡Extrapolate
+&p$"_" /+≡Extrapolate
