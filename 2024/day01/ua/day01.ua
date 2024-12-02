@@ -1,20 +1,19 @@
-Split! ← ⊜^0 ⊸≠
+Split! ← ⊜^0 ⊸≠ # Lines ? Char String
 
 Part₁ ← (
-  Split!□ @\n
-  ◇≡(⊟∩⋕ °$"_   _")
-  ⍉
-  ≡(⊏⍏.)
-  /+⌵/-
+  Split!□ @\n       # Lines ? String
+  ◇≡(⊟∩⋕ °$"_   _") # Columns ? Lines
+  ⍉                 # 
+  ≡(⊏⍏.)            # Sorted ? Lists
+  /+⌵/-             # Distance ? Sorted
 )
 
 Part₂ ← (
-  Split!□ @\n
-  ◇≡(⊟∩⋕ °$"_   _")
-  °⊟⍉
-  ⊙¤
-  ⟜≡(/+=)
-  /+×
+  Split!□ @\n       # Lines ? String
+  ◇≡(⊟∩⋕ °$"_   _") # Columns ? Lines
+  °⊟⍉               # FirstList SecondList ? Columns
+  ⟜≡(/+=) ⊙¤        # FirstList Frequencies ? FirstList SecondList
+  /+×               # SimilarityScore ? FirstList Frequencies
 )
 
 &fras ⊏1 &args
@@ -28,7 +27,6 @@ Part₂ ← (
   $ 1   3
   $ 3   9
   $ 3   3
-  .
-  ⍤⤙≍ 11 Part₁
+  ⍤⤙≍ 11 Part₁ .
   ⍤⤙≍ 31 Part₂
 └─╴
