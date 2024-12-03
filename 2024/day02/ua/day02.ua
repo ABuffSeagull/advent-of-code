@@ -1,10 +1,10 @@
 ~ "../../utils.ua" ~ Split!
 
-Monotonic! ← /↧↘¯1^0↻1. # IsMonotonic ? List
-
 IsSafe ← (
-  ⊃($Monotonic ↥⊃(Monotonic!>|Monotonic!<)
-  | $WithinDiff /↧↧⊃(≤3|≥1)⌵↘¯1-↻1.)
+  ↻1.
+  ⊃(↥∩(/↧↘¯1) ⊃(<|>)
+  | /↧↧⊃(≤3|≥1) ↘¯1 ⌵-
+  )
   ↧
 )
 
@@ -27,9 +27,9 @@ Part₂ ← (
   /+
 )
 
-&fras ⊏1 &args
-&p $"Part1: _" Part₁ .
-&p $"Part2: _" Part₂
+# &fras ⊏1 &args
+# &p $"Part1: _" Part₁ .
+# &p $"Part2: _" Part₂
 
 ┌─╴test
   $ 7 6 4 2 1
