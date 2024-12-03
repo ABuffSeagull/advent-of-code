@@ -1,4 +1,4 @@
-Split!    ← ⊜^0 ⊸≠       # Lines ? Char String
+~ "../../utils.ua" ~ Split!
 ParseLine ← ⋕[°$"_   _"] # Nums ? String
 
 Part₁ ← (
