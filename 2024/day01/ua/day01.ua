@@ -10,9 +10,10 @@ Part₁ ← (
 
 Part₂ ← (
   Split!ParseLine @\n # Lines ? String
-  °⊟⍉                 # FirstList SecondList ? Columns
-  ⟜≡(/+=) ⊙¤          # FirstList Frequencies ? FirstList SecondList
-  /+×                 # SimilarityScore ? FirstList Frequencies
+  :⊓$First$Second °⊟⍉ # FirstList SecondList ? Columns
+  $Occurrences ⊸⊞=
+  $Frequencies /+
+  $Similarity /+×
 )
 
 ⍣(&fras ⊏1 &args
